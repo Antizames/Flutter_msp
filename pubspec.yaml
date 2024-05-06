@@ -1,7 +1,7 @@
 name: flutter_msp
 description: flutter library to handle MSP connection
-version: 0.1.0
-repository: https://github.com/Antizames/OWL_EYEV2
+version: 0.3.0
+repository: https://github.com/Antizames/Flutter_msp
 environment:
   sdk: '>=3.0.3 <4.0.0'
 
@@ -43,8 +43,7 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - 3D/CHICKEN.glb
+  # assets:
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

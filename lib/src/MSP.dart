@@ -19,7 +19,7 @@ class MSPCommunication {
     List<String> availablePort = SerialPort.availablePorts;
     print('Available Ports: $availablePort');
   }
-  Future<void> sendMessageV1(int code, String data) async {
+  Future<void> sendMessageV1(int code, dynamic data) async {
     try {
       Uint8List message = encodeMessageV1(code, data);
       port.write(message);
@@ -35,7 +35,7 @@ class MSPCommunication {
       port.close();
     }
   }
-  Future<void> sendMessageV2(int code, Uint8List data) async {
+  Future<void> sendMessageV2(int code, dynamic data) async {
     try {
       Uint8List message = encodeMessageV2(code, data);
       port.write(message);
@@ -51,15 +51,37 @@ class MSPCommunication {
       port.close();
     }
   }
+  Future<void> sendMessageCLI() async {
+    try {
+      Uint8List message = Uint8List.fromList('#'.codeUnits);
+      port.write(message);
+      await Future.delayed(Duration(seconds: 1));  // simulate some delay
+      List<int> response = port.read(64);
+      if (response.isNotEmpty) {
+        print('Response Data: ${String.fromCharCodes(response)}');
+      } else {
+        print('No response received from the device.');
+      }
+    } finally {
+      port.close();
+    }
+  }
 
   Uint8List encodeMessageV1(int code, dynamic data) {
     Uint8List dataBytes;
+    int dataOffset = 0;
     if (data is String) {
       dataBytes = Uint8List.fromList(data.codeUnits);
     } else if (data is int) {
       dataBytes = Uint8List(4);
       dataBytes.buffer.asByteData().setInt32(0, data, Endian.little);
-    } else {
+    } else if (data is List<int>) {
+      dataBytes = Uint8List(data.length*4);
+      for(int i = 0; i < data.length; i++){
+        dataBytes.buffer.asByteData().setInt32(dataOffset, data[i], Endian.little);
+        dataOffset+= 4;
+      }
+    }else {
       throw ArgumentError('Unsupported data type');
     }
 
